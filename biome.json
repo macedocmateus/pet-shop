@@ -21,11 +21,15 @@
         "useSortedClasses": "off",
         "noFloatingPromises": "warn"
       },
+      "a11y": {
+        "useValidLang": "warn"
+      },
       "suspicious": {
         "noConsole": "warn",
         "noExplicitAny": "warn",
         "noCommentText": "warn",
-        "noUnknownAtRules": "warn"
+        "noUnknownAtRules": "warn",
+        "noArrayIndexKey": "warn"
       },
       "complexity": {
         "noUselessConstructor": "warn",

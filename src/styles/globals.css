@@ -3,6 +3,7 @@
 
 @theme {
   --color-*: initial;
+  --text-*: initial;
   
   /* Content Colors */
   --color-content-primary: #ffffff;
@@ -10,7 +11,7 @@
   --color-content-tertiary: #666666;
   --color-content-brand: #9282fa;
 
-  /* Background Colors */
+/* Background Colors */
   --color-background-primary: #151515;
   --color-background-secondary: #1e1e1e;
   --color-background-tertiary: #23242c;
