@@ -1,4 +1,4 @@
-import { Appointment } from '@/types/Appointments'
+import { Appointment } from '@/types/appointments'
 
 type AppointmentCard = {
   appointment: Appointment

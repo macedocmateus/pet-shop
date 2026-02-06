@@ -34,7 +34,8 @@
       "complexity": {
         "noUselessConstructor": "warn",
         "noForEach": "warn",
-        "noUselessFragments": "warn"
+        "noUselessFragments": "warn",
+        "useLiteralKeys": "warn"
       },
       "security": {
         "noBlankTarget": {

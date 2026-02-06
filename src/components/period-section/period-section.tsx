@@ -1,6 +1,6 @@
 import { Cloudy, Moon, Sun } from 'lucide-react'
-import { AppointmentPeriod } from '@/types/Appointments'
-import { AppointmentCard } from '../appointment-car'
+import { AppointmentPeriod } from '@/types/appointments'
+import { AppointmentCard } from '../appointment-card'
 
 type PeriodSectionProps = {
   period: AppointmentPeriod
