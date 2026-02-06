@@ -36,7 +36,11 @@ export function PeriodSection({ period }: PeriodSectionProps) {
             </div>
 
             {period.appointments.map((appointment, index) => (
-              <AppointmentCard key={index} appointment={appointment} />
+              <AppointmentCard
+                key={index}
+                appointment={appointment}
+                isFirstInSection={index === 0}
+              />
             ))}
           </div>
         </div>
