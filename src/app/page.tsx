@@ -1,7 +1,10 @@
 import { PeriodSection } from '@/components/period-section/period-section'
 import { APPOINTMENT_DATA, groupAppointmentByPeriod } from '@/utils'
 
-export default function Home() {
+export default async function Home() {
+  // const appoit = prisma.appointment.findMany()
+  // console.log(appoit)
+
   const periods = groupAppointmentByPeriod(APPOINTMENT_DATA)
 
   return (
