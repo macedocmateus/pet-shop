@@ -22,14 +22,16 @@
         "noFloatingPromises": "warn"
       },
       "a11y": {
-        "useValidLang": "warn"
+        "useValidLang": "warn",
+        "useSemanticElements": "warn"
       },
       "suspicious": {
         "noConsole": "warn",
         "noExplicitAny": "warn",
         "noCommentText": "warn",
         "noUnknownAtRules": "warn",
-        "noArrayIndexKey": "warn"
+        "noArrayIndexKey": "warn",
+        "noDoubleEquals": "warn"
       },
       "complexity": {
         "noUselessConstructor": "warn",
