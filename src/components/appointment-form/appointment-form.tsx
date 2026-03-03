@@ -7,6 +7,7 @@ import {
   ChevronDown,
   Clock,
   Dog,
+  Loader2,
   Phone,
   User,
 } from 'lucide-react'
@@ -41,36 +42,36 @@ import {
   SelectValue,
 } from '../ui/select'
 
-const appointmentFormSchema = z.object({
-  tutorName: z.string().min(3, 'O nome do tutor é obrigatório'),
-  petName: z.string().min(3, 'O nome do pet é obrigatório'),
-  phone: z.string().min(11, 'Número de telefone é obrigatório'),
-  description: z.string().min(3, 'A descrição é obrigatória'),
-  scheduleAt: z
-    .date({
-      error: 'A data é obrigatória',
-    })
-    .min(startOfToday(), {
-      message: 'A data não pode ser no passado',
-    }),
-  time: z
-    .string()
-    .min(1, 'A hora é obrigatória')
-    .refine(
-      (data) => {
-        const [hour, minute] = data.time.split(':')
-        const scheduleDateTime = setMinutes(
-          setHours(data.scheduleAt, Number(hour)),
-          Number(minute),
-        )
-        return scheduleDateTime > new Date()
-      },
-      {
-        path: ['time'],
-        error: 'O horário não pode ser no passado',
-      },
-    ),
-})
+const appointmentFormSchema = z
+  .object({
+    tutorName: z.string().min(3, 'O nome do tutor é obrigatório'),
+    petName: z.string().min(3, 'O nome do pet é obrigatório'),
+    phone: z.string().min(11, 'Número de telefone é obrigatório'),
+    description: z.string().min(3, 'A descrição é obrigatória'),
+    scheduleAt: z
+      .date({
+        message: 'A data é obrigatória',
+      })
+      .min(startOfToday(), {
+        message: 'A data não pode ser no passado',
+      }),
+    time: z.string().min(1, 'A hora é obrigatória'),
+  })
+  .refine(
+    (data) => {
+      if (!data.scheduleAt || !data.time) return true
+      const [hour, minute] = data.time.split(':').map((v) => v.trim())
+      const scheduleDateTime = setMinutes(
+        setHours(data.scheduleAt, Number(hour)),
+        Number(minute),
+      )
+      return scheduleDateTime > new Date()
+    },
+    {
+      path: ['time'],
+      message: 'O horário não pode ser no passado',
+    },
+  )
 
 type AppointFormValues = z.infer<typeof appointmentFormSchema>
 
@@ -83,6 +84,7 @@ export function AppointmentForm() {
       phone: '',
       description: '',
       scheduleAt: undefined,
+      time: '',
     },
   })
 
@@ -228,90 +230,104 @@ export function AppointmentForm() {
               )}
             />
 
-            <Controller
-              control={form.control}
-              name="scheduleAt"
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel
-                    htmlFor={field.name}
-                    className="text-label-medium-size text-content-primary"
-                  >
-                    Data
-                  </FieldLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          'w-full justify-between text-left font-normal bg-background-tertiary border-border-primary text-content-primary hover:bg-background-tertiary hover:border-border-secondary hover:text-content-primary focus-visible:ring-offset-0 focus-visible:ring-1 focus-visible:ring-border-brand focus:border-border-brand focus-visible:border-border-brand',
-                        )}
-                      >
-                        <div className="flex items-center gap-2">
-                          <CalendarIcon
-                            className="text-content-brand"
-                            size={20}
-                          />
-                          {field.value ? (
-                            format(field.value, 'dd/MM/yyyy')
-                          ) : (
-                            <span className="text-content-secondary">
-                              Selecione uma data
-                            </span>
+            <div className="space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0">
+              <Controller
+                control={form.control}
+                name="scheduleAt"
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel
+                      htmlFor={field.name}
+                      className="text-label-medium-size text-content-primary"
+                    >
+                      Data
+                    </FieldLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            'w-full justify-between text-left font-normal bg-background-tertiary border-border-primary text-content-primary hover:bg-background-tertiary hover:border-border-secondary hover:text-content-primary focus-visible:ring-offset-0 focus-visible:ring-1 focus-visible:ring-border-brand focus:border-border-brand focus-visible:border-border-brand',
                           )}
+                        >
+                          <div className="flex items-center gap-2">
+                            <CalendarIcon
+                              className="text-content-brand"
+                              size={20}
+                            />
+                            {field.value ? (
+                              format(field.value, 'dd/MM/yyyy')
+                            ) : (
+                              <span className="text-content-secondary">
+                                Selecione a data
+                              </span>
+                            )}
+                          </div>
+                          <ChevronDown className="opacity-50 h-4 w-4" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) => date < startOfToday()}
+                        />
+                      </PopoverContent>
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Popover>
+                  </Field>
+                )}
+              />
+              <Controller
+                control={form.control}
+                name="time"
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel
+                      htmlFor={field.name}
+                      className="text-label-medium-size text-content-primary"
+                    >
+                      Hora
+                    </FieldLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger>
+                        <div className="flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-content-brand" />
+                          <SelectValue placeholder="--:-- --" />
                         </div>
-                        <ChevronDown className="opacity-50 h-4 w-4" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) => date < startOfToday()}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </Field>
-              )}
-            />
-
-            <Controller
-              control={form.control}
-              name="time"
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel
-                    htmlFor={field.name}
-                    className="text-label-medium-size text-content-primary"
-                  >
-                    Hora
-                  </FieldLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger>
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-content-brand" />
-                        <SelectValue placeholder="--:-- --" />
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {TIME_OPTIONS.map((time) => (
-                        <SelectItem key={time} value={time}>
-                          {time}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {TIME_OPTIONS.map((time) => (
+                          <SelectItem key={time} value={time}>
+                            {time}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </div>
           </FieldGroup>
 
-          <Button type="submit">Salvar</Button>
+          <div className="flex justify-end">
+            <Button
+              type="submit"
+              variant="brand"
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              AGENDAR
+            </Button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>
