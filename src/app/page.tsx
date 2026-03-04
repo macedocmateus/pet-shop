@@ -1,5 +1,6 @@
 import { AppointmentForm } from '@/components/appointment-form/appointment-form'
 import { PeriodSection } from '@/components/period-section/period-section'
+import { Button } from '@/components/ui/button'
 import { prisma } from '@/lib/prisma'
 import { groupAppointmentByPeriod } from '@/utils'
 
@@ -36,7 +37,9 @@ export default async function Home() {
       md:bg-transparent 
       md:p-0"
       >
-        <AppointmentForm />
+        <AppointmentForm>
+          <Button variant={'brand'}>Novo agendamento</Button>
+        </AppointmentForm>
       </div>
     </div>
   )

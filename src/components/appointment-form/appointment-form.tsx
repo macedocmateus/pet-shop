@@ -11,12 +11,12 @@ import {
   Phone,
   User,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { IMaskInput } from 'react-imask'
 import { toast } from 'sonner'
 import z from 'zod'
-import { createAppointment } from '@/app/actions'
+import { createAppointment, updateAppointment } from '@/app/actions'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -35,6 +35,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
+import { Appointment } from '@/types/appointments'
 import { Calendar } from '../ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import {
@@ -77,8 +78,15 @@ const appointmentFormSchema = z
   )
 
 type AppointFormValues = z.infer<typeof appointmentFormSchema>
+type AppointmentFormProps = {
+  appointment?: Appointment
+  children?: React.ReactNode
+}
 
-export function AppointmentForm() {
+export function AppointmentForm({
+  appointment,
+  children,
+}: AppointmentFormProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   const form = useForm<AppointFormValues>({
@@ -99,26 +107,37 @@ export function AppointmentForm() {
     const scheduleAt = new Date(data.scheduleAt)
     scheduleAt.setHours(Number(hour), Number(minute), 0, 0)
 
-    const result = await createAppointment({
-      ...data,
-      scheduleAt,
-    })
+    const isEdit = !!appointment?.id
+
+    const result = isEdit
+      ? await updateAppointment(appointment.id, {
+          ...data,
+          scheduleAt,
+        })
+      : await createAppointment({
+          ...data,
+          scheduleAt,
+        })
 
     if (result?.error) {
       toast.error(result.error)
       return
     }
-    toast.success(`Agendamento criado com sucesso!`)
+    toast.success(
+      `Agendamento ${isEdit ? 'atualizado' : 'criado'} com sucesso!`,
+    )
 
     setIsOpen(false)
     form.reset()
   }
 
+  useEffect(() => {
+    form.reset(appointment)
+  }, [appointment, form])
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant={'brand'}>Novo agendamento</Button>
-      </DialogTrigger>
+      {children && <DialogTrigger asChild>{children}</DialogTrigger>}
 
       <DialogContent
         variant={'appointment'}
@@ -362,7 +381,7 @@ const generateTimeOptions = (): string[] => {
   for (let hour = 9; hour <= 21; hour++) {
     for (let minute = 0; minute < 60; minute += 30) {
       if (hour === 21 && minute > 0) break
-      const timeString = `${hour.toString().padStart(2, '0')} : ${minute.toString().padStart(2, '0')}`
+      const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
       times.push(timeString)
     }
   }

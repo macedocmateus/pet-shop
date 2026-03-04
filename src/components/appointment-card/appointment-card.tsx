@@ -1,5 +1,8 @@
+import { Pen as EditIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Appointment } from '@/types/appointments'
+import { AppointmentForm } from '../appointment-form/appointment-form'
+import { Button } from '../ui/button'
 
 type AppointmentCard = {
   appointment: Appointment
@@ -40,6 +43,13 @@ export function AppointmentCard({
             {appointment.description}
           </span>
         </div>
+      </div>
+      <div className="text-right mt-2 md:mt-0 col-span-2 md:col-span-1 flex justify-end items-center gap-2">
+        <AppointmentForm appointment={appointment}>
+          <Button variant="edit" size="icon">
+            <EditIcon size={16} />
+          </Button>
+        </AppointmentForm>
       </div>
     </div>
   )
