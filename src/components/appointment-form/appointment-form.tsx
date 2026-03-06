@@ -300,7 +300,7 @@ export function AppointmentForm({
                               format(field.value, 'dd/MM/yyyy')
                             ) : (
                               <span className="text-content-secondary">
-                                Selecione a data
+                                Selecione uma data
                               </span>
                             )}
                           </div>

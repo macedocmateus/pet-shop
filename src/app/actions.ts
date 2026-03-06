@@ -1,6 +1,4 @@
 'use server'
-
-import { CloudCog } from 'lucide-react'
 import { revalidatePath } from 'next/cache'
 import z from 'zod'
 import { prisma } from '@/lib/prisma'
