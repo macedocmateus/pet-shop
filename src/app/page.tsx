@@ -12,7 +12,6 @@ export default async function Home({
   searchParams: Promise<{ date?: string }>
 }) {
   const { date } = await searchParams
-  console.log('Date', date)
   const selectedDate = date ? parseISO(date) : new Date()
   const appointments = await prisma.appointment.findMany({
     where: {
@@ -25,7 +24,6 @@ export default async function Home({
       scheduleAt: 'asc',
     },
   })
-  console.log(appointments)
 
   const periods = groupAppointmentByPeriod(appointments)
 
